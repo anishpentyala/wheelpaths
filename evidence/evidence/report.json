@@ -1,0 +1,390 @@
+{
+  "schema": 1,
+  "status": "COLLISIONS",
+  "scheme": {
+    "purelib": "/venv/lib/python3.10/site-packages",
+    "platlib": "/venv/lib/python3.10/site-packages",
+    "scripts": "/venv/bin",
+    "data": "/venv"
+  },
+  "wheels": [
+    {
+      "input": 0,
+      "wheel": "jwt-1.4.0-py3-none-any.whl",
+      "sha256": "7560a7f1de4f90de94ac645ee0303ac60c95b9e08e058fb69f6c330f71d71b11"
+    },
+    {
+      "input": 1,
+      "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+      "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193"
+    }
+  ],
+  "claims": [
+    {
+      "input": 0,
+      "wheel": "jwt-1.4.0-py3-none-any.whl",
+      "sha256": "7560a7f1de4f90de94ac645ee0303ac60c95b9e08e058fb69f6c330f71d71b11",
+      "target": "/venv/lib/python3.10/site-packages/jwt/__init__.py",
+      "member": "jwt/__init__.py",
+      "kind": "file"
+    },
+    {
+      "input": 0,
+      "wheel": "jwt-1.4.0-py3-none-any.whl",
+      "sha256": "7560a7f1de4f90de94ac645ee0303ac60c95b9e08e058fb69f6c330f71d71b11",
+      "target": "/venv/lib/python3.10/site-packages/jwt/exceptions.py",
+      "member": "jwt/exceptions.py",
+      "kind": "file"
+    },
+    {
+      "input": 0,
+      "wheel": "jwt-1.4.0-py3-none-any.whl",
+      "sha256": "7560a7f1de4f90de94ac645ee0303ac60c95b9e08e058fb69f6c330f71d71b11",
+      "target": "/venv/lib/python3.10/site-packages/jwt/jwa.py",
+      "member": "jwt/jwa.py",
+      "kind": "file"
+    },
+    {
+      "input": 0,
+      "wheel": "jwt-1.4.0-py3-none-any.whl",
+      "sha256": "7560a7f1de4f90de94ac645ee0303ac60c95b9e08e058fb69f6c330f71d71b11",
+      "target": "/venv/lib/python3.10/site-packages/jwt/jwk.py",
+      "member": "jwt/jwk.py",
+      "kind": "file"
+    },
+    {
+      "input": 0,
+      "wheel": "jwt-1.4.0-py3-none-any.whl",
+      "sha256": "7560a7f1de4f90de94ac645ee0303ac60c95b9e08e058fb69f6c330f71d71b11",
+      "target": "/venv/lib/python3.10/site-packages/jwt/jwkset.py",
+      "member": "jwt/jwkset.py",
+      "kind": "file"
+    },
+    {
+      "input": 0,
+      "wheel": "jwt-1.4.0-py3-none-any.whl",
+      "sha256": "7560a7f1de4f90de94ac645ee0303ac60c95b9e08e058fb69f6c330f71d71b11",
+      "target": "/venv/lib/python3.10/site-packages/jwt/jws.py",
+      "member": "jwt/jws.py",
+      "kind": "file"
+    },
+    {
+      "input": 0,
+      "wheel": "jwt-1.4.0-py3-none-any.whl",
+      "sha256": "7560a7f1de4f90de94ac645ee0303ac60c95b9e08e058fb69f6c330f71d71b11",
+      "target": "/venv/lib/python3.10/site-packages/jwt/jwt.py",
+      "member": "jwt/jwt.py",
+      "kind": "file"
+    },
+    {
+      "input": 0,
+      "wheel": "jwt-1.4.0-py3-none-any.whl",
+      "sha256": "7560a7f1de4f90de94ac645ee0303ac60c95b9e08e058fb69f6c330f71d71b11",
+      "target": "/venv/lib/python3.10/site-packages/jwt/py.typed",
+      "member": "jwt/py.typed",
+      "kind": "file"
+    },
+    {
+      "input": 0,
+      "wheel": "jwt-1.4.0-py3-none-any.whl",
+      "sha256": "7560a7f1de4f90de94ac645ee0303ac60c95b9e08e058fb69f6c330f71d71b11",
+      "target": "/venv/lib/python3.10/site-packages/jwt/utils.py",
+      "member": "jwt/utils.py",
+      "kind": "file"
+    },
+    {
+      "input": 0,
+      "wheel": "jwt-1.4.0-py3-none-any.whl",
+      "sha256": "7560a7f1de4f90de94ac645ee0303ac60c95b9e08e058fb69f6c330f71d71b11",
+      "target": "/venv/lib/python3.10/site-packages/jwt-1.4.0.dist-info/licenses/LICENSE",
+      "member": "jwt-1.4.0.dist-info/licenses/LICENSE",
+      "kind": "file"
+    },
+    {
+      "input": 0,
+      "wheel": "jwt-1.4.0-py3-none-any.whl",
+      "sha256": "7560a7f1de4f90de94ac645ee0303ac60c95b9e08e058fb69f6c330f71d71b11",
+      "target": "/venv/lib/python3.10/site-packages/jwt-1.4.0.dist-info/METADATA",
+      "member": "jwt-1.4.0.dist-info/METADATA",
+      "kind": "file"
+    },
+    {
+      "input": 0,
+      "wheel": "jwt-1.4.0-py3-none-any.whl",
+      "sha256": "7560a7f1de4f90de94ac645ee0303ac60c95b9e08e058fb69f6c330f71d71b11",
+      "target": "/venv/lib/python3.10/site-packages/jwt-1.4.0.dist-info/WHEEL",
+      "member": "jwt-1.4.0.dist-info/WHEEL",
+      "kind": "file"
+    },
+    {
+      "input": 0,
+      "wheel": "jwt-1.4.0-py3-none-any.whl",
+      "sha256": "7560a7f1de4f90de94ac645ee0303ac60c95b9e08e058fb69f6c330f71d71b11",
+      "target": "/venv/lib/python3.10/site-packages/jwt-1.4.0.dist-info/top_level.txt",
+      "member": "jwt-1.4.0.dist-info/top_level.txt",
+      "kind": "file"
+    },
+    {
+      "input": 0,
+      "wheel": "jwt-1.4.0-py3-none-any.whl",
+      "sha256": "7560a7f1de4f90de94ac645ee0303ac60c95b9e08e058fb69f6c330f71d71b11",
+      "target": "/venv/lib/python3.10/site-packages/jwt-1.4.0.dist-info/RECORD",
+      "member": "jwt-1.4.0.dist-info/RECORD",
+      "kind": "file"
+    },
+    {
+      "input": 1,
+      "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+      "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+      "target": "/venv/lib/python3.10/site-packages/jwt/__init__.py",
+      "member": "jwt/__init__.py",
+      "kind": "file"
+    },
+    {
+      "input": 1,
+      "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+      "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+      "target": "/venv/lib/python3.10/site-packages/jwt/algorithms.py",
+      "member": "jwt/algorithms.py",
+      "kind": "file"
+    },
+    {
+      "input": 1,
+      "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+      "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+      "target": "/venv/lib/python3.10/site-packages/jwt/api_jwk.py",
+      "member": "jwt/api_jwk.py",
+      "kind": "file"
+    },
+    {
+      "input": 1,
+      "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+      "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+      "target": "/venv/lib/python3.10/site-packages/jwt/api_jws.py",
+      "member": "jwt/api_jws.py",
+      "kind": "file"
+    },
+    {
+      "input": 1,
+      "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+      "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+      "target": "/venv/lib/python3.10/site-packages/jwt/api_jwt.py",
+      "member": "jwt/api_jwt.py",
+      "kind": "file"
+    },
+    {
+      "input": 1,
+      "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+      "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+      "target": "/venv/lib/python3.10/site-packages/jwt/exceptions.py",
+      "member": "jwt/exceptions.py",
+      "kind": "file"
+    },
+    {
+      "input": 1,
+      "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+      "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+      "target": "/venv/lib/python3.10/site-packages/jwt/help.py",
+      "member": "jwt/help.py",
+      "kind": "file"
+    },
+    {
+      "input": 1,
+      "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+      "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+      "target": "/venv/lib/python3.10/site-packages/jwt/jwk_set_cache.py",
+      "member": "jwt/jwk_set_cache.py",
+      "kind": "file"
+    },
+    {
+      "input": 1,
+      "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+      "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+      "target": "/venv/lib/python3.10/site-packages/jwt/jwks_client.py",
+      "member": "jwt/jwks_client.py",
+      "kind": "file"
+    },
+    {
+      "input": 1,
+      "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+      "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+      "target": "/venv/lib/python3.10/site-packages/jwt/py.typed",
+      "member": "jwt/py.typed",
+      "kind": "file"
+    },
+    {
+      "input": 1,
+      "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+      "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+      "target": "/venv/lib/python3.10/site-packages/jwt/types.py",
+      "member": "jwt/types.py",
+      "kind": "file"
+    },
+    {
+      "input": 1,
+      "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+      "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+      "target": "/venv/lib/python3.10/site-packages/jwt/utils.py",
+      "member": "jwt/utils.py",
+      "kind": "file"
+    },
+    {
+      "input": 1,
+      "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+      "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+      "target": "/venv/lib/python3.10/site-packages/jwt/warnings.py",
+      "member": "jwt/warnings.py",
+      "kind": "file"
+    },
+    {
+      "input": 1,
+      "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+      "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+      "target": "/venv/lib/python3.10/site-packages/pyjwt-2.15.1.dist-info/licenses/AUTHORS.rst",
+      "member": "pyjwt-2.15.1.dist-info/licenses/AUTHORS.rst",
+      "kind": "file"
+    },
+    {
+      "input": 1,
+      "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+      "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+      "target": "/venv/lib/python3.10/site-packages/pyjwt-2.15.1.dist-info/licenses/LICENSE",
+      "member": "pyjwt-2.15.1.dist-info/licenses/LICENSE",
+      "kind": "file"
+    },
+    {
+      "input": 1,
+      "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+      "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+      "target": "/venv/lib/python3.10/site-packages/pyjwt-2.15.1.dist-info/METADATA",
+      "member": "pyjwt-2.15.1.dist-info/METADATA",
+      "kind": "file"
+    },
+    {
+      "input": 1,
+      "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+      "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+      "target": "/venv/lib/python3.10/site-packages/pyjwt-2.15.1.dist-info/WHEEL",
+      "member": "pyjwt-2.15.1.dist-info/WHEEL",
+      "kind": "file"
+    },
+    {
+      "input": 1,
+      "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+      "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+      "target": "/venv/lib/python3.10/site-packages/pyjwt-2.15.1.dist-info/top_level.txt",
+      "member": "pyjwt-2.15.1.dist-info/top_level.txt",
+      "kind": "file"
+    },
+    {
+      "input": 1,
+      "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+      "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+      "target": "/venv/lib/python3.10/site-packages/pyjwt-2.15.1.dist-info/RECORD",
+      "member": "pyjwt-2.15.1.dist-info/RECORD",
+      "kind": "file"
+    }
+  ],
+  "conflicts": [
+    {
+      "type": "same-target",
+      "target": "/venv/lib/python3.10/site-packages/jwt/__init__.py",
+      "claims": [
+        {
+          "input": 0,
+          "wheel": "jwt-1.4.0-py3-none-any.whl",
+          "sha256": "7560a7f1de4f90de94ac645ee0303ac60c95b9e08e058fb69f6c330f71d71b11",
+          "target": "/venv/lib/python3.10/site-packages/jwt/__init__.py",
+          "member": "jwt/__init__.py",
+          "kind": "file"
+        },
+        {
+          "input": 1,
+          "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+          "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+          "target": "/venv/lib/python3.10/site-packages/jwt/__init__.py",
+          "member": "jwt/__init__.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "type": "same-target",
+      "target": "/venv/lib/python3.10/site-packages/jwt/exceptions.py",
+      "claims": [
+        {
+          "input": 0,
+          "wheel": "jwt-1.4.0-py3-none-any.whl",
+          "sha256": "7560a7f1de4f90de94ac645ee0303ac60c95b9e08e058fb69f6c330f71d71b11",
+          "target": "/venv/lib/python3.10/site-packages/jwt/exceptions.py",
+          "member": "jwt/exceptions.py",
+          "kind": "file"
+        },
+        {
+          "input": 1,
+          "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+          "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+          "target": "/venv/lib/python3.10/site-packages/jwt/exceptions.py",
+          "member": "jwt/exceptions.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "type": "same-target",
+      "target": "/venv/lib/python3.10/site-packages/jwt/py.typed",
+      "claims": [
+        {
+          "input": 0,
+          "wheel": "jwt-1.4.0-py3-none-any.whl",
+          "sha256": "7560a7f1de4f90de94ac645ee0303ac60c95b9e08e058fb69f6c330f71d71b11",
+          "target": "/venv/lib/python3.10/site-packages/jwt/py.typed",
+          "member": "jwt/py.typed",
+          "kind": "file"
+        },
+        {
+          "input": 1,
+          "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+          "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+          "target": "/venv/lib/python3.10/site-packages/jwt/py.typed",
+          "member": "jwt/py.typed",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "type": "same-target",
+      "target": "/venv/lib/python3.10/site-packages/jwt/utils.py",
+      "claims": [
+        {
+          "input": 0,
+          "wheel": "jwt-1.4.0-py3-none-any.whl",
+          "sha256": "7560a7f1de4f90de94ac645ee0303ac60c95b9e08e058fb69f6c330f71d71b11",
+          "target": "/venv/lib/python3.10/site-packages/jwt/utils.py",
+          "member": "jwt/utils.py",
+          "kind": "file"
+        },
+        {
+          "input": 1,
+          "wheel": "pyjwt-2.15.1-py3-none-any.whl",
+          "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193",
+          "target": "/venv/lib/python3.10/site-packages/jwt/utils.py",
+          "member": "jwt/utils.py",
+          "kind": "file"
+        }
+      ]
+    }
+  ],
+  "scope": "POSIX exact lexical paths; candidate wheels only; no installation",
+  "excluded": [
+    "existing files",
+    "filesystem symlink/case/Unicode aliases",
+    "generated bytecode",
+    "Windows launchers",
+    "compatibility tags",
+    "dependency resolution",
+    "RECORD integrity and wheel validity",
+    "import namespace shadowing",
+    "execution safety"
+  ]
+}
