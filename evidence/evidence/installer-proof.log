@@ -1,0 +1,3 @@
+FIRST_WHEEL 14 projected paths exist after installer copy
+SECOND_WHEEL_REFUSAL File already exists: /tmp/wheelpaths-install-scratch/venv/lib/python3.10/site-packages/jwt/__init__.py
+REAL_PLAN 4 collisions; first actual overwrite refusal agrees
