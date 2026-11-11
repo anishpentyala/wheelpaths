@@ -1,0 +1,16 @@
+[
+  {
+    "project": "jwt",
+    "version": "1.4.0",
+    "url": "https://files.pythonhosted.org/packages/b9/80/34e3fae850adb0b7b8b9b1cf02b2d975fcb68e0e8eb7d56d6b4fc23f7433/jwt-1.4.0-py3-none-any.whl",
+    "path": "/tmp/wheelpaths-real/jwt-1.4.0-py3-none-any.whl",
+    "sha256": "7560a7f1de4f90de94ac645ee0303ac60c95b9e08e058fb69f6c330f71d71b11"
+  },
+  {
+    "project": "PyJWT",
+    "version": "2.15.1",
+    "url": "https://files.pythonhosted.org/packages/50/ca/44de4e75f8aadc457f0634be3b542815078ded46dca30efb960edeecad6e/pyjwt-2.15.1-py3-none-any.whl",
+    "path": "/tmp/wheelpaths-real/pyjwt-2.15.1-py3-none-any.whl",
+    "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193"
+  }
+]
