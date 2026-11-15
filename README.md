@@ -43,9 +43,13 @@ even with equal contents: two owners can remove each other's files on uninstall.
 A file that another claim needs as a directory is also a conflict. Shared
 directories alone, including namespace-package directories, are not conflicts.
 
-Archives are never extracted. At most 256 MiB of archive bytes, 100,000 members,
-and 1 MiB per read metadata file are accepted. This is not a general hostile-input
-sandbox or a resource bound on total invocation size.
+Archives are never extracted. Per archive, at most 256 MiB of archive bytes, 100,000 members and 1 MiB per
+read metadata file are accepted. Invocation-wide limits additionally cap the
+wheel count, aggregate archive bytes, aggregate ZIP members and projected claims.
+These are admission limits, not a general hostile-input sandbox or hard limits
+on memory, disk, CPU time, report size or conflict count. ZIP central directories,
+metadata text and path/claim objects still need memory; conflicts can repeat
+claims in the report.
 
 ## Supported boundary
 
@@ -93,3 +97,36 @@ notes cite their actual capabilities and do not claim exhaustive novelty.
 ## License
 
 MIT. No package-index release is implied by this repository.
+
+
+## Invocation-wide admission limits
+
+| Option | Default | What counts |
+| --- | --- | --- |
+| `--max-wheels` | 100 | Every supplied input, including repeated paths |
+| `--max-total-archive-bytes` | 1073741824 (1 GiB) | Sum of exact archive bytes read across inputs |
+| `--max-total-members` | 250000 | Every ZIP member, including directories/metadata |
+| `--max-claims` | 500000 | Each projected file/directory/generated script claim |
+
+Each cap is an integer from 1 through 1000000000000. API booleans are not
+integers here. Use `audit(wheels, scheme, limits=Limits(...))`, importing `Limits`
+from `wheelpaths`, or the CLI flags above. Existing per-archive limits still
+apply independently, even if an aggregate cap is raised. Equality with a cap is
+allowed; exceeding any cap returns INVALID/exit2, never a partial collision plan.
+Raising a cap is an explicit choice to admit more input, not a safety guarantee.
+
+The wheel count is checked before any archive is opened. Each archive read is
+bounded by the smaller of the per-archive limit plus one byte and the remaining
+aggregate byte budget plus one. The one excess byte detects an overrun, is never
+accepted into a plan, and need not be the entire next archive. Aggregate member
+counts are checked after ZIP indexing but before reading metadata. Claims are
+counted as projected, including generated console/gui scripts and repeated
+claims; a relocation-only directory entry skipped by the existing planner still
+counts as a ZIP member but does not create a projected claim. No file content is
+installed, extracted or executed. Budgets reset for each audit call.
+
+These new defaults intentionally reject formerly uncapped large invocations.
+For inputs admitted under the defaults, successful plan structure, owner hashes,
+claim ordering, collision semantics and report schema remain unchanged. No new
+fields are added to successful reports. The CLI's INVALID JSON keeps its existing
+shape; consumers must not interpret an invalid result as a collision-free plan.
