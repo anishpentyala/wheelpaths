@@ -8,6 +8,7 @@ import stat
 import zipfile
 import zlib
 from collections import defaultdict
+from dataclasses import dataclass
 from email.parser import Parser
 from pathlib import Path, PurePosixPath
 
@@ -19,6 +20,27 @@ class InvalidPlan(ValueError):
 KEYS = {'purelib', 'platlib', 'scripts', 'data'}
 MAX_METADATA = 1024 * 1024
 MAX_MEMBERS = 100000
+
+
+@dataclass(frozen=True)
+class Limits:
+    """Invocation-wide admission caps, not hard resource guarantees."""
+
+    max_wheels: int = 100
+    max_total_archive_bytes: int = 1024 * 1024 * 1024
+    max_total_members: int = 250000
+    max_claims: int = 500000
+
+    def __post_init__(self):
+        for name, value in vars(self).items():
+            if type(value) is not int or not 1 <= value <= 1000000000000:
+                raise InvalidPlan(name + ' must be an integer from 1 through 1000000000000')
+
+
+class _Budget:
+    def __init__(self, limits):
+        self.limits = limits
+        self.archive_bytes = self.members = self.claims = 0
 
 
 def relative(value):
@@ -52,7 +74,9 @@ def field(message, name):
     return values[0].strip()
 
 
-def wheel_claims(path, scheme, index):
+def wheel_claims(path, scheme, index, budget=None):
+    if budget is None:
+        budget = _Budget(Limits())
     if not isinstance(path, (str, os.PathLike)):
         raise InvalidPlan('wheel path must be text or path-like')
     try:
@@ -68,9 +92,13 @@ def wheel_claims(path, scheme, index):
     dist = prefix + '.dist-info'
     data = prefix + '.data'
     with open(path, 'rb') as source:
-        raw = source.read(256 * 1024 * 1024 + 1)
+        raw = source.read(min(256 * 1024 * 1024 + 1,
+                              budget.limits.max_total_archive_bytes - budget.archive_bytes + 1))
     if len(raw) > 256 * 1024 * 1024:
         raise InvalidPlan('wheel exceeds 256 MiB archive limit')
+    budget.archive_bytes += len(raw)
+    if budget.archive_bytes > budget.limits.max_total_archive_bytes:
+        raise InvalidPlan('total archive byte limit exceeded')
     owner = {'input': index, 'wheel': path.name,
              'sha256': hashlib.sha256(raw).hexdigest()}
     result = []
@@ -78,6 +106,9 @@ def wheel_claims(path, scheme, index):
         infos = z.infolist()
         if len(infos) > MAX_MEMBERS:
             raise InvalidPlan('wheel exceeds member limit')
+        budget.members += len(infos)
+        if budget.members > budget.limits.max_total_members:
+            raise InvalidPlan('total ZIP member limit exceeded')
         names = set()
         for info in infos:
             original = info.orig_filename
@@ -132,6 +163,9 @@ def wheel_claims(path, scheme, index):
             raise InvalidPlan('filename and metadata identity differ')
 
         def claim(target, member, kind='file'):
+            budget.claims += 1
+            if budget.claims > budget.limits.max_claims:
+                raise InvalidPlan('total projected claim limit exceeded')
             result.append(dict(owner, target=target, member=member, kind=kind))
 
         for info in infos:
@@ -170,15 +204,22 @@ def wheel_claims(path, scheme, index):
     return owner, result
 
 
-def audit(wheels, scheme):
+def audit(wheels, scheme, *, limits=None):
     """Plan one candidate wheel set. Input errors never return a clear plan."""
     scheme = scheme_paths(scheme)
     if not isinstance(wheels, (list, tuple)) or not wheels:
         raise InvalidPlan('at least one wheel is required')
+    if limits is None:
+        limits = Limits()
+    if type(limits) is not Limits:
+        raise InvalidPlan('limits must be a Limits instance')
+    if len(wheels) > limits.max_wheels:
+        raise InvalidPlan('wheel count limit exceeded')
+    budget = _Budget(limits)
     owners, claims = [], []
     try:
         for index, path in enumerate(wheels):
-            owner, rows = wheel_claims(path, scheme, index)
+            owner, rows = wheel_claims(path, scheme, index, budget)
             owners.append(owner)
             claims.extend(rows)
     except (OSError, zipfile.BadZipFile, UnicodeError,
