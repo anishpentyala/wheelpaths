@@ -1,0 +1,2 @@
+include README.md LICENSE LIMITS_VALIDATION.md
+recursive-include tests *.py
