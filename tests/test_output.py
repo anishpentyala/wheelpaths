@@ -104,3 +104,64 @@ def test_callable_none_stdout_returns_2_without_replacing_it(tmp_path, monkeypat
     monkeypatch.setattr(sys, 'stdout', None)
     assert main(args) == 2
     assert sys.stdout is None
+
+
+@pytest.mark.parametrize('shape', ['array', 'object'])
+@pytest.mark.parametrize('route', ['callable', 'module', 'installed'])
+def test_scheme_decoder_nesting_is_invalid_json(tmp_path, capsys, shape, route):
+    scheme = tmp_path/'deep-scheme.json'
+    # Exceeds recursive decoders on 3.10/3.13. Iterative decoders may parse
+    # it successfully; structural validation must still reject it. <150 KiB.
+    left, right = ('[', ']') if shape == 'array' else ('{"x":', '}')
+    scheme.write_text(left * 20000 + '0' + right * 20000)
+    args = ['--scheme', str(scheme), str(tmp_path/'missing.whl')]
+    if route == 'callable':
+        code = main(args)
+        captured = capsys.readouterr()
+        output, error = captured.out, captured.err
+    else:
+        command = COMMANDS[0 if route == 'module' else 1]
+        result = subprocess.run(command + args, check=False,
+                                capture_output=True, text=True)
+        code, output, error = result.returncode, result.stdout, result.stderr
+    assert code == 2
+    report = json.loads(output)
+    assert report['schema'] == 1 and report['status'] == 'INVALID'
+    assert report['error'] in {
+        'scheme JSON exceeds decoder nesting limit',
+        'scheme must have exactly purelib, platlib, scripts, data'}
+    assert 'claims' not in report and 'conflicts' not in report
+    assert error == ''
+
+
+def test_scheme_decoder_refusal_does_not_call_audit(tmp_path, monkeypatch, capsys):
+    from wheelpaths import cli
+
+    scheme = tmp_path/'deep-scheme.json'
+    scheme.write_text('[' * 20000 + '0' + ']' * 20000)
+
+    def forbidden_audit(*args, **kwargs):
+        raise AssertionError('must refuse before reading wheels')
+
+    def exhausted_decoder(*args, **kwargs):
+        raise RecursionError('decoder exhausted')
+
+    monkeypatch.setattr(cli.json, 'load', exhausted_decoder)
+    monkeypatch.setattr(cli, 'audit', forbidden_audit)
+    assert cli.main(['--scheme', str(scheme), 'missing.whl']) == 2
+    report = json.loads(capsys.readouterr().out)
+    assert report['status'] == 'INVALID'
+    assert report['error'] == 'scheme JSON exceeds decoder nesting limit'
+
+
+def test_unexpected_audit_recursion_is_not_reclassified(tmp_path, monkeypatch):
+    from wheelpaths import cli
+
+    args = args_for(tmp_path, 'clear')
+
+    def broken_audit(*args, **kwargs):
+        raise RecursionError('unexpected planner failure')
+
+    monkeypatch.setattr(cli, 'audit', broken_audit)
+    with pytest.raises(RecursionError, match='unexpected planner failure'):
+        cli.main(args)
