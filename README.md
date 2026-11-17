@@ -47,9 +47,9 @@ Archives are never extracted. Per archive, at most 256 MiB of archive bytes, 100
 read metadata file are accepted. Invocation-wide limits additionally cap the
 wheel count, aggregate archive bytes, aggregate ZIP members and projected claims.
 These are admission limits, not a general hostile-input sandbox or hard limits
-on memory, disk, CPU time, report size or conflict count. ZIP central directories,
-metadata text and path/claim objects still need memory; conflicts can repeat
-claims in the report.
+on memory, disk, CPU time or serialized report bytes. ZIP central directories,
+metadata text and path/claim objects still need memory. Conflict claim references
+have a separate admission cap, including repetitions across conflicts.
 
 ## Supported boundary
 
@@ -107,6 +107,7 @@ MIT. No package-index release is implied by this repository.
 | `--max-total-archive-bytes` | 1073741824 (1 GiB) | Sum of exact archive bytes read across inputs |
 | `--max-total-members` | 250000 | Every ZIP member, including directories/metadata |
 | `--max-claims` | 500000 | Each projected file/directory/generated script claim |
+| `--max-conflict-claims` | 500000 | Every claim reference in every reported conflict, counting repetitions |
 
 Each cap is an integer from 1 through 1000000000000. API booleans are not
 integers here. Use `audit(wheels, scheme, limits=Limits(...))`, importing `Limits`
@@ -130,3 +131,26 @@ For inputs admitted under the defaults, successful plan structure, owner hashes,
 claim ordering, collision semantics and report schema remain unchanged. No new
 fields are added to successful reports. The CLI's INVALID JSON keeps its existing
 shape; consumers must not interpret an invalid result as a collision-free plan.
+
+### Conflict report admission
+
+`Limits(max_conflict_claims=N)` or `--max-conflict-claims N` limits the sum of
+`len(conflict["claims"])` across the complete report. A claim repeated in several
+conflicts is counted every time. Both same-target and file/directory conflicts
+count. Shared directories alone do not create conflicts or spend this budget.
+For example, one file blocking 100 descendant targets creates 200 claim references,
+even though the blocking file is only one projected claim.
+
+Equality with the cap is accepted. If the next conflict would exceed it, the
+whole audit raises `InvalidPlan`, or the CLI returns INVALID/exit 2 without a
+partial conflict plan. It never clips conflicts or presents an incomplete list
+as a complete report. The cap is checked before constructing a combined
+ancestor/descendant conflict-claim list. Budget state resets for each audit call.
+This new default intentionally rejects previously admitted reports above the
+cap; reports within it retain the same fields, ordering and collision semantics.
+
+This limits claim-reference count, not unique claims, string lengths, encoded
+JSON bytes or every intermediate allocation. Input claims and ZIP indexes have
+already been collected before conflict analysis. A long target or member string
+can make each reference large, so this is not a hard output-size or RAM bound.
+No file is installed, executed, extracted, deleted or repaired.

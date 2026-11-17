@@ -3,7 +3,7 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 [project]
 name = "wheelpaths"
-version = "0.2.0"
+version = "0.3.0"
 description = "Offline collision plans for explicit POSIX wheel installation layouts"
 requires-python = ">=3.10"
 license = "MIT"
