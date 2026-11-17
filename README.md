@@ -167,3 +167,13 @@ shutdown flush, avoiding an ignored flush exception and exit 120.
 The callable `wheelpaths.cli.main(argv)` returns 2 on output failure without
 closing or redirecting caller-owned streams. Embedding applications own their
 own later flush/shutdown behavior.
+
+
+## Scheme decoder limits
+
+A scheme JSON document nested beyond Python's decoder limit returns INVALID
+JSON and exit 2, rather than an uncaught traceback and exit 1 (which otherwise
+means a collision was found). This refusal happens before reading wheel
+archives. The nesting guard applies only to scheme decoding; unexpected planner
+failures are not silently turned into input errors. This is not a hard input
+byte, memory, or CPU limit for scheme files.
