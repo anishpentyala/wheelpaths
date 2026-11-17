@@ -154,3 +154,16 @@ JSON bytes or every intermediate allocation. Input claims and ZIP indexes have
 already been collected before conflict analysis. A long target or member string
 can make each reference large, so this is not a hard output-size or RAM bound.
 No file is installed, executed, extracted, deleted or repaired.
+
+### Output failures
+
+The installed command and `python -m wheelpaths.cli` return exit 2 if stdout
+cannot be written or flushed, including closed pipes and full devices. This
+overrides the model's clear/collision status. Partial bytes already written
+cannot be retracted; check the process exit status before using a report.
+The process runner redirects failed stdout to the null device before Python's
+shutdown flush, avoiding an ignored flush exception and exit 120.
+
+The callable `wheelpaths.cli.main(argv)` returns 2 on output failure without
+closing or redirecting caller-owned streams. Embedding applications own their
+own later flush/shutdown behavior.
