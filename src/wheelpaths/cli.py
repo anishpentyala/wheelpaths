@@ -25,7 +25,10 @@ def _execute(argv=None):
     args = parser.parse_args(argv)
     try:
         with open(args.scheme, encoding='utf-8') as f:
-            scheme = json.load(f, object_pairs_hook=no_duplicates)
+            try:
+                scheme = json.load(f, object_pairs_hook=no_duplicates)
+            except RecursionError as exc:
+                raise InvalidPlan('scheme JSON exceeds decoder nesting limit') from exc
         result = audit(args.wheels, scheme, limits=Limits(**{
             name: getattr(args, name) for name in vars(Limits())}))
     except (InvalidPlan, ValueError, OSError) as exc:
