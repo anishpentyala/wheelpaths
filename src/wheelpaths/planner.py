@@ -30,6 +30,7 @@ class Limits:
     max_total_archive_bytes: int = 1024 * 1024 * 1024
     max_total_members: int = 250000
     max_claims: int = 500000
+    max_conflict_claims: int = 500000
 
     def __post_init__(self):
         for name, value in vars(self).items():
@@ -229,10 +230,19 @@ def audit(wheels, scheme, *, limits=None):
     for row in claims:
         groups[row['target']].append(row)
     conflicts = []
+    conflict_claims = 0
+
+    def admit_conflict(count):
+        nonlocal conflict_claims
+        if count > limits.max_conflict_claims - conflict_claims:
+            raise InvalidPlan('total conflict claim reference limit exceeded')
+        conflict_claims += count
+
     for target in sorted(groups):
         rows = groups[target]
         files = [row for row in rows if row['kind'] != 'directory']
         if len(files) > 1 or (files and len(files) < len(rows)):
+            admit_conflict(len(rows))
             conflicts.append({'type': 'same-target', 'target': target,
                               'claims': rows})
         # Every file also requires all ancestors to be directories. Shared
@@ -241,6 +251,9 @@ def audit(wheels, scheme, *, limits=None):
             parent_files = [row for row in groups.get(str(parent), [])
                             if row['kind'] != 'directory']
             if parent_files:
+                # Charge before concatenation, including references repeated
+                # across different conflicts. No partial plan is returned.
+                admit_conflict(len(parent_files) + len(rows))
                 conflicts.append({'type': 'file-directory', 'target': str(parent),
                                   'claims': parent_files + rows})
     return {'schema': 1, 'status': 'COLLISIONS' if conflicts else 'NO_COLLISIONS_IN_MODEL',
