@@ -84,6 +84,28 @@ namespace-directory sharing, invalid metadata, duplicate members, special files,
 and machine-readable CLI outcomes. See `evidence/QUALIFICATION.md` for exact
 runtime, negative-control and installed-artifact scope.
 
+### OpenCV desktop and headless wheels
+
+A second offline check uses the manylinux2014 x86-64 `opencv-python` and
+`opencv-python-headless` wheels for version `5.1.0.95`. Under the explicit scheme
+in [`evidence/opencv-downloads.json`](evidence/opencv-downloads.json), the pair
+produces 230 claims and 41 same-target conflicts, all under `cv2`. The manifest
+pins both archive URLs, sizes and SHA256 hashes, plus the checked planner commit.
+Pass those two wheel files and that scheme to the command in **Run** to reproduce
+the plan. Neither wheel was installed or imported.
+
+For these exact archives, an independent intersection of regular ZIP member
+names gives the same 41 targets. Neither archive has `.data` relocation members
+or entry-point metadata, both have `Root-Is-Purelib: false`, and the scheme's
+library roots are equal. That simple intersection is not an oracle for arbitrary
+wheels. Each wheel alone has no collision in this model, not a safe-install
+certificate.
+
+This illustrates a known packaging boundary, not a newly discovered OpenCV bug
+or maintainer adoption. Both [OpenCV package](https://pypi.org/project/opencv-python/)
+and [headless package](https://pypi.org/project/opencv-python-headless/) pages
+already say to choose only one variant because they share the `cv2` namespace.
+
 ## Existing work and intended use
 
 Conflict detection is not new. ModuleGuard already studies and detects import

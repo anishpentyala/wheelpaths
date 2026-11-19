@@ -1,0 +1,26 @@
+{
+  "checked_commit": "44894dab4e83509e6d835d14a5178cb70b1a1d9d",
+  "scheme": {
+    "purelib": "/env/lib",
+    "platlib": "/env/lib",
+    "scripts": "/env/bin",
+    "data": "/env"
+  },
+  "archives": [
+    {
+      "filename": "opencv_python-5.1.0.95-cp37-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "url": "https://files.pythonhosted.org/packages/69/b5/d55ad2e38fafe028c21639fa750ddcfdee29eaa047c3638e2e71741a6cda/opencv_python-5.1.0.95-cp37-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "size": 72331896,
+      "sha256": "63ad2b9e34c8ee4acde30fd93a162bc91f53480273f595667fedb5bb65ce6069"
+    },
+    {
+      "filename": "opencv_python_headless-5.1.0.95-cp37-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "url": "https://files.pythonhosted.org/packages/37/63/6f18cf6b25aca818c5432317f9c9db3ee87d9f03d576d1e5953910429be3/opencv_python_headless-5.1.0.95-cp37-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "size": 57722171,
+      "sha256": "93cc83677f07791a9d3284bb6b9bbf7c2ffcca05aabcee239e68ca4abaf50aa1"
+    }
+  ],
+  "expected_status": "COLLISIONS",
+  "expected_claims": 230,
+  "expected_same_target_conflicts": 41
+}
