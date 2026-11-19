@@ -231,6 +231,10 @@ def audit(wheels, scheme, *, limits=None):
         groups[row['target']].append(row)
     conflicts = []
     conflict_claims = 0
+    # Cache multi-claim ancestors only. Single-claim groups are cheap to scan,
+    # and caching them adds memory for ordinary directory/child pairs.
+    # Claim groups stay unchanged throughout conflict planning.
+    parent_files_cache = {}
 
     def admit_conflict(count):
         nonlocal conflict_claims
@@ -248,8 +252,16 @@ def audit(wheels, scheme, *, limits=None):
         # Every file also requires all ancestors to be directories. Shared
         # directories alone are valid (including PEP 420 namespace packages).
         for parent in PurePosixPath(target).parents:
-            parent_files = [row for row in groups.get(str(parent), [])
-                            if row['kind'] != 'directory']
+            parent_target = str(parent)
+            parent_rows = groups.get(parent_target, [])
+            if len(parent_rows) > 1:
+                if parent_target not in parent_files_cache:
+                    parent_files_cache[parent_target] = [
+                        row for row in parent_rows if row['kind'] != 'directory']
+                parent_files = parent_files_cache[parent_target]
+            else:
+                parent_files = [row for row in parent_rows
+                                if row['kind'] != 'directory']
             if parent_files:
                 # Charge before concatenation, including references repeated
                 # across different conflicts. No partial plan is returned.
