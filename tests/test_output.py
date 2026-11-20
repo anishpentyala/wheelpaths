@@ -146,9 +146,10 @@ def test_scheme_decoder_refusal_does_not_call_audit(tmp_path, monkeypatch, capsy
     def exhausted_decoder(*args, **kwargs):
         raise RecursionError('decoder exhausted')
 
-    monkeypatch.setattr(cli.json, 'load', exhausted_decoder)
+    monkeypatch.setattr(cli.json, 'loads', exhausted_decoder)
     monkeypatch.setattr(cli, 'audit', forbidden_audit)
     assert cli.main(['--scheme', str(scheme), 'missing.whl']) == 2
+    monkeypatch.undo()
     report = json.loads(capsys.readouterr().out)
     assert report['status'] == 'INVALID'
     assert report['error'] == 'scheme JSON exceeds decoder nesting limit'
