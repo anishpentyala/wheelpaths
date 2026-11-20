@@ -75,6 +75,15 @@ def field(message, name):
     return values[0].strip()
 
 
+def _read_regular(path, max_bytes):
+    """Read at most max_bytes plus one from a descriptor-verified regular file."""
+    fd = os.open(path, os.O_RDONLY | getattr(os, 'O_NONBLOCK', 0))
+    with os.fdopen(fd, 'rb') as stream:
+        if not stat.S_ISREG(os.fstat(stream.fileno()).st_mode):
+            raise InvalidPlan('input must be a regular file')
+        return stream.read(max_bytes + 1)
+
+
 def wheel_claims(path, scheme, index, budget=None):
     if budget is None:
         budget = _Budget(Limits())
@@ -92,9 +101,8 @@ def wheel_claims(path, scheme, index, budget=None):
     relative(prefix)
     dist = prefix + '.dist-info'
     data = prefix + '.data'
-    with open(path, 'rb') as source:
-        raw = source.read(min(256 * 1024 * 1024 + 1,
-                              budget.limits.max_total_archive_bytes - budget.archive_bytes + 1))
+    raw = _read_regular(path, min(256 * 1024 * 1024,
+                                 budget.limits.max_total_archive_bytes - budget.archive_bytes))
     if len(raw) > 256 * 1024 * 1024:
         raise InvalidPlan('wheel exceeds 256 MiB archive limit')
     budget.archive_bytes += len(raw)
