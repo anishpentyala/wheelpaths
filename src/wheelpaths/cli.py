@@ -3,7 +3,9 @@ import argparse
 import json
 import os
 import sys
-from .planner import audit, InvalidPlan, Limits
+from .planner import audit, InvalidPlan, Limits, _read_regular
+
+MAX_SCHEME_BYTES = 1024 * 1024
 
 
 def no_duplicates(pairs):
@@ -24,11 +26,13 @@ def _execute(argv=None):
         parser.add_argument('--' + name.replace('_', '-'), type=int, default=value)
     args = parser.parse_args(argv)
     try:
-        with open(args.scheme, encoding='utf-8') as f:
-            try:
-                scheme = json.load(f, object_pairs_hook=no_duplicates)
-            except RecursionError as exc:
-                raise InvalidPlan('scheme JSON exceeds decoder nesting limit') from exc
+        raw_scheme = _read_regular(args.scheme, MAX_SCHEME_BYTES)
+        if len(raw_scheme) > MAX_SCHEME_BYTES:
+            raise InvalidPlan('scheme JSON exceeds 1 MiB byte limit')
+        try:
+            scheme = json.loads(raw_scheme.decode('utf-8'), object_pairs_hook=no_duplicates)
+        except RecursionError as exc:
+            raise InvalidPlan('scheme JSON exceeds decoder nesting limit') from exc
         result = audit(args.wheels, scheme, limits=Limits(**{
             name: getattr(args, name) for name in vars(Limits())}))
     except (InvalidPlan, ValueError, OSError) as exc:
