@@ -1,6 +1,6 @@
 """Exact admission boundaries, bounded reads and collision report compatibility."""
-import builtins
 import json
+import os
 from dataclasses import replace
 from unittest.mock import patch
 
@@ -42,12 +42,17 @@ def test_second_archive_read_only_remaining_budget_plus_one(tmp_path):
     b = wheel(tmp_path, 'beta', {'payload': 'x' * 10000})
     size = a.stat().st_size
     observed = []
-    real_open = builtins.open
+    real_fdopen = os.fdopen
 
     class ReadSpy:
+        def __init__(self, stream):
+            self.file = stream
+
         def __enter__(self):
-            self.file = real_open(b, 'rb')
             return self
+
+        def fileno(self):
+            return self.file.fileno()
 
         def __exit__(self, *args):
             self.file.close()
@@ -56,10 +61,12 @@ def test_second_archive_read_only_remaining_budget_plus_one(tmp_path):
             observed.append(count)
             return self.file.read(count)
 
-    def op(path, *args, **kw):
-        return ReadSpy() if path == b else real_open(path, *args, **kw)
+    def op(fd, *args, **kw):
+        is_second = os.fstat(fd).st_ino == b.stat().st_ino
+        stream = real_fdopen(fd, *args, **kw)
+        return ReadSpy(stream) if is_second else stream
 
-    with patch('builtins.open', op):
+    with patch('os.fdopen', op):
         with pytest.raises(InvalidPlan, match='total archive byte'):
             audit([a, b], SCHEME, limits=Limits(max_total_archive_bytes=size + 7))
     assert observed == [8]
