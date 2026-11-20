@@ -43,6 +43,13 @@ even with equal contents: two owners can remove each other's files on uninstall.
 A file that another claim needs as a directory is also a conflict. Shared
 directories alone, including namespace-package directories, are not conflicts.
 
+Inputs must resolve to regular files, verified on the opened descriptor. Symlinks
+to regular files are allowed. On systems with `O_NONBLOCK`, FIFOs without writers
+are refused without waiting for a producer. Other device or socket open failures
+also produce INVALID; there is no universal timeout for regular files on a slow
+or remote filesystem. The scheme JSON is UTF-8 and at most 1 MiB, including
+whitespace. An over-limit or nonregular later input produces no partial plan.
+
 Archives are never extracted. Per archive, at most 256 MiB of archive bytes, 100,000 members and 1 MiB per
 read metadata file are accepted. Invocation-wide limits additionally cap the
 wheel count, aggregate archive bytes, aggregate ZIP members and projected claims.
