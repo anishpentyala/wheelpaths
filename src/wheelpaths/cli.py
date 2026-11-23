@@ -3,6 +3,7 @@ import argparse
 import json
 import os
 import sys
+from functools import partial
 from .planner import audit, InvalidPlan, Limits, _read_regular
 
 MAX_SCHEME_BYTES = 1024 * 1024
@@ -18,7 +19,11 @@ def no_duplicates(pairs):
 
 
 def _execute(argv=None):
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        **({"color": False} if sys.version_info >= (3, 14) else {}),
+        **({"formatter_class": partial(argparse.HelpFormatter, color=False)}
+           if sys.version_info[:2] == (3, 14) else {}))
     parser.add_argument('--scheme', required=True,
                         help='JSON file with explicit absolute POSIX scheme paths')
     parser.add_argument('wheels', nargs='+')
