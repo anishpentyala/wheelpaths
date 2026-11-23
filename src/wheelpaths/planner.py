@@ -177,6 +177,18 @@ def wheel_claims(path, scheme, index, budget=None):
                 raise InvalidPlan('total projected claim limit exceeded')
             result.append(dict(owner, target=target, member=member, kind=kind))
 
+        # Normalize bases once, not once per member. The audit has already
+        # admitted canonical absolute POSIX paths; fallback retains the helper
+        # behavior for direct callers supplying a noncanonical base.
+        bases = {key: str(PurePosixPath(base)) for key, base in scheme.items()}
+
+        def projected(key, name):
+            rel = relative(name)
+            base = bases[key]
+            if base.startswith('/'):
+                return base + ('' if base.endswith('/') else '/') + rel
+            return destination(scheme[key], rel)
+
         for info in infos:
             name = info.filename.rstrip('/')
             if name == data and not info.is_dir():
@@ -191,7 +203,7 @@ def wheel_claims(path, scheme, index, budget=None):
                 key, rel = bits[1:]
             else:
                 key, rel = root, name
-            claim(destination(scheme[key], rel), info.filename,
+            claim(projected(key, rel), info.filename,
                   'directory' if info.is_dir() else 'file')
         ep = dist + '/entry_points.txt'
         if ep in names:
@@ -208,7 +220,7 @@ def wheel_claims(path, scheme, index, budget=None):
                     relative(name)
                     if '/' in name or not value.strip():
                         raise InvalidPlan('unsupported script entry point')
-                    claim(destination(scheme['scripts'], name), ep + ':' +
+                    claim(projected('scripts', name), ep + ':' +
                           section + ':' + name, 'generated-script')
     return owner, result
 
