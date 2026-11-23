@@ -166,3 +166,12 @@ def test_unexpected_audit_recursion_is_not_reclassified(tmp_path, monkeypatch):
     monkeypatch.setattr(cli, 'audit', broken_audit)
     with pytest.raises(RecursionError, match='unexpected planner failure'):
         cli.main(args)
+
+
+def test_help_stays_plain_with_forced_color():
+    env = dict(os.environ, FORCE_COLOR='1', PYTHON_COLORS='1', TERM='xterm-256color')
+    for command in COMMANDS:
+        result = subprocess.run(command + ['--help'], env=env, capture_output=True)
+        assert result.returncode == 0
+        assert b'usage:' in result.stdout and b'\x1b[' not in result.stdout
+        assert result.stderr == b''
