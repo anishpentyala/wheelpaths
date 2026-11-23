@@ -236,3 +236,9 @@ means a collision was found). This refusal happens before reading wheel
 archives. The nesting guard applies only to scheme decoding; unexpected planner
 failures are not silently turned into input errors. This is not a hard input
 byte, memory, or CPU limit for scheme files.
+
+## Path projection implementation
+
+Normalized scheme bases are prepared once per wheel, then joined to admitted relative member names without reparsing the base for each claim. This keeps the exact POSIX model, path validation and conflict rules unchanged. Direct `wheel_claims` calls with text relative bases retain the existing path helper; normalized absolute text bases retain their projected spelling. Malformed non-text direct-call bases are outside the admitted audit model and may raise a different exception type.
+
+On one controlled 12,000-member synthetic wheel, median complete-audit time was about 16% lower on Linux CPython 3.10.12. This is a local fixture measurement, not a general speed guarantee. ZIP parsing and ancestor-conflict work still contribute to runtime; no lower memory usage is claimed.
