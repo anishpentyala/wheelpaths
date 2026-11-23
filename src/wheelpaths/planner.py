@@ -271,8 +271,11 @@ def audit(wheels, scheme, *, limits=None):
                               'claims': rows})
         # Every file also requires all ancestors to be directories. Shared
         # directories alone are valid (including PEP 420 namespace packages).
-        for parent in PurePosixPath(target).parents:
-            parent_target = str(parent)
+        # Targets use the admitted canonical absolute POSIX grammar. Walk
+        # lexical parents directly, avoiding a path object per ancestor.
+        parent_target = target
+        while parent_target != '/':
+            parent_target = parent_target.rpartition('/')[0] or '/'
             parent_rows = groups.get(parent_target, [])
             if len(parent_rows) > 1:
                 if parent_target not in parent_files_cache:
@@ -286,7 +289,7 @@ def audit(wheels, scheme, *, limits=None):
                 # Charge before concatenation, including references repeated
                 # across different conflicts. No partial plan is returned.
                 admit_conflict(len(parent_files) + len(rows))
-                conflicts.append({'type': 'file-directory', 'target': str(parent),
+                conflicts.append({'type': 'file-directory', 'target': parent_target,
                                   'claims': parent_files + rows})
     return {'schema': 1, 'status': 'COLLISIONS' if conflicts else 'NO_COLLISIONS_IN_MODEL',
             'scheme': scheme, 'wheels': owners, 'claims': claims,
