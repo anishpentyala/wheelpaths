@@ -7,7 +7,7 @@ Check whether a chosen set of Python wheels would claim the same installation pa
 ## Quickstart
 
 ```sh
-python -m pip install "git+https://github.com/anishpentyala/wheelpaths.git"
+python -m pip install wheelpaths
 python -m pip download --only-binary=:all: --no-deps jwt==1.4.0 PyJWT==2.15.1 -d wheels
 printf '{"purelib":"/venv/lib/site-packages","platlib":"/venv/lib/site-packages","scripts":"/venv/bin","data":"/venv"}' > scheme.json
 wheelpaths --scheme scheme.json wheels/*.whl > plan.json
@@ -26,8 +26,7 @@ The planner exits 1 for collisions. It reads archives without installing,
 extracting or importing them. This explicit POSIX path model does not inspect
 an existing environment, resolve dependencies or prove an installation is safe.
 
-Installation is currently from source. A PyPI release is being prepared; do not
-assume `pip install wheelpaths` is available until its package page is linked here.
+Install from [PyPI](https://pypi.org/project/wheelpaths/). Python 3.10 or later is required.
 
 ## Details
 
