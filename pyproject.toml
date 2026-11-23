@@ -2,12 +2,20 @@
 requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 [project]
+readme = "README.md"
 name = "wheelpaths"
 version = "0.3.2"
 description = "Offline collision plans for explicit POSIX wheel installation layouts"
 requires-python = ">=3.10"
 license = "MIT"
+authors = [{name = "Anish Pentyala"}]
+keywords = ["wheel", "python-packaging", "file-collisions"]
 license-files = ["LICENSE"]
+[project.urls]
+Homepage = "https://github.com/anishpentyala/wheelpaths"
+Repository = "https://github.com/anishpentyala/wheelpaths"
+Issues = "https://github.com/anishpentyala/wheelpaths/issues"
+
 [project.scripts]
 wheelpaths = "wheelpaths.cli:entrypoint"
 [tool.setuptools.packages.find]
