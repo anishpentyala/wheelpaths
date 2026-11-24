@@ -1,13 +1,14 @@
 """Explicit POSIX scheme projections, not an installer or wheel validator."""
 import configparser
 import hashlib
-import io
 import os
 import re
 import stat
+import tempfile
 import zipfile
 import zlib
 from collections import defaultdict
+from contextlib import contextmanager
 from dataclasses import dataclass
 from email.parser import Parser
 from pathlib import Path, PurePosixPath
@@ -84,6 +85,34 @@ def _read_regular(path, max_bytes):
         return stream.read(max_bytes + 1)
 
 
+@contextmanager
+def _wheel_snapshot(path, budget):
+    """Copy admitted source bytes to a private seekable snapshot in chunks."""
+    max_bytes = min(256 * 1024 * 1024,
+                    budget.limits.max_total_archive_bytes - budget.archive_bytes)
+    fd = os.open(path, os.O_RDONLY | getattr(os, 'O_NONBLOCK', 0))
+    with os.fdopen(fd, 'rb') as source:
+        if not stat.S_ISREG(os.fstat(source.fileno()).st_mode):
+            raise InvalidPlan('input must be a regular file')
+        with tempfile.TemporaryFile(mode='w+b') as snapshot:
+            digest = hashlib.sha256()
+            size = 0
+            while size <= max_bytes:
+                chunk = source.read(min(1024 * 1024, max_bytes - size + 1))
+                if not chunk:
+                    break
+                snapshot.write(chunk)
+                digest.update(chunk)
+                size += len(chunk)
+            if size > 256 * 1024 * 1024:
+                raise InvalidPlan('wheel exceeds 256 MiB archive limit')
+            budget.archive_bytes += size
+            if budget.archive_bytes > budget.limits.max_total_archive_bytes:
+                raise InvalidPlan('total archive byte limit exceeded')
+            snapshot.seek(0)
+            yield snapshot, digest.hexdigest()
+
+
 def wheel_claims(path, scheme, index, budget=None):
     if budget is None:
         budget = _Budget(Limits())
@@ -101,17 +130,10 @@ def wheel_claims(path, scheme, index, budget=None):
     relative(prefix)
     dist = prefix + '.dist-info'
     data = prefix + '.data'
-    raw = _read_regular(path, min(256 * 1024 * 1024,
-                                 budget.limits.max_total_archive_bytes - budget.archive_bytes))
-    if len(raw) > 256 * 1024 * 1024:
-        raise InvalidPlan('wheel exceeds 256 MiB archive limit')
-    budget.archive_bytes += len(raw)
-    if budget.archive_bytes > budget.limits.max_total_archive_bytes:
-        raise InvalidPlan('total archive byte limit exceeded')
-    owner = {'input': index, 'wheel': path.name,
-             'sha256': hashlib.sha256(raw).hexdigest()}
     result = []
-    with zipfile.ZipFile(io.BytesIO(raw)) as z:
+    with _wheel_snapshot(path, budget) as (snapshot, digest), \
+            zipfile.ZipFile(snapshot) as z:
+        owner = {'input': index, 'wheel': path.name, 'sha256': digest}
         infos = z.infolist()
         if len(infos) > MAX_MEMBERS:
             raise InvalidPlan('wheel exceeds member limit')
