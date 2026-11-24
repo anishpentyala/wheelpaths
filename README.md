@@ -244,3 +244,30 @@ Normalized scheme bases are prepared once per wheel, then joined to admitted rel
 On one controlled 12,000-member synthetic wheel, median complete-audit time was about 16% lower on Linux CPython 3.10.12. This is a local fixture measurement, not a general speed guarantee. ZIP parsing and ancestor-conflict work still contribute to runtime; no lower memory usage is claimed.
 
 Canonical projected targets now walk lexical slash-separated ancestors directly instead of constructing `PurePosixPath` parent objects for each target. Conflict order, claim references and reference-budget checks are unchanged. A separate local Linux CPython 3.10.12 measurement of the same 12,000-member, six-level synthetic layout gave whole-audit medians of 280 ms before this ancestor-walk change and 123 ms after it (nine alternating samples). This is fixture-specific, not a general speed or memory guarantee.
+
+## Seekable wheel snapshots
+
+Each wheel is read from a descriptor-verified regular file in chunks of at most
+1 MiB into a private temporary file. SHA256 is updated from those same chunks,
+and ZIP parsing reads only that snapshot, not a reopened source path. The
+snapshot is closed on success or failure before advancing to the next wheel.
+The existing source-file byte limits and complete-report refusal rules remain
+in effect, including reading at most the remaining cap plus one byte.
+
+This trades temporary storage and extra I/O for avoiding a complete archive
+bytes object in the Python heap. It needs temporary space for one admitted
+archive at a time, up to 256 MiB plus the one over-limit detection byte. Python's
+default temporary directory is used; temporary-file creation, write or read
+failures make the audit INVALID/exit 2, never a partial clear plan. A filesystem
+backed by RAM can still charge those bytes to system memory. ZIP indexes,
+metadata, claims and the final report still need memory. These are not hard RAM,
+CPU or temporary-filesystem quotas. Like the earlier read, a snapshot is the
+bytes observed during the read, not an atomic view of a concurrently modified
+source file. No archive member payload is installed, extracted or executed.
+
+On one local Linux CPython 3.13.18 fixture containing a 64 MiB stored payload,
+six alternating complete-audit samples retained byte-identical reports. Median
+tracemalloc peak fell from about 256 MiB to 2.1 MB, while median instrumented
+time rose from 61 ms to 79 ms. That is a fixture-specific Python-allocation
+measurement, not process RSS, total-system memory or a speed guarantee. Small
+or highly compressed wheels may benefit less and temporary I/O can cost more.
