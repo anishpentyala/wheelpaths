@@ -284,3 +284,17 @@ argument parsing keep their ordinary `SystemExit(0)` / `SystemExit(2)` behavior.
 Already-written partial bytes cannot be retracted. This change is source-only;
 it does not publish a new PyPI release or change the collision model or report
 fields.
+
+### Snapshot copy delivery checks
+
+The source checkout now requires each temporary snapshot write to report an
+integer count equal to the complete chunk length. A short, unavailable or
+invalid write result makes the entire audit INVALID/exit 2 before ZIP parsing,
+with no partial plan or archive receipt. The temporary snapshot is closed on
+refusal. This protects the connection between the source bytes hashed and the
+snapshot parsed; a valid-looking ZIP suffix alone cannot prove a complete copy.
+
+Normal complete writes keep the report and collision model unchanged. This is
+a check of the storage interface's reported result, not independent disk-integrity
+verification or a guarantee against a storage layer that falsely reports success.
+There is no new package-index release, tag or dependency.
