@@ -220,7 +220,7 @@ The installed command and `python -m wheelpaths.cli` return exit 2 if stdout
 cannot be written or flushed, including closed pipes and full devices. This
 overrides the model's clear/collision status. Partial bytes already written
 cannot be retracted; check the process exit status before using a report.
-The process runner redirects failed stdout to the null device before Python's
+The process runner stops using a failed standard stream before Python's
 shutdown flush, avoiding an ignored flush exception and exit 120.
 
 The callable `wheelpaths.cli.main(argv)` returns 2 on output failure without
@@ -271,3 +271,16 @@ tracemalloc peak fell from about 256 MiB to 2.1 MB, while median instrumented
 time rose from 61 ms to 79 ms. That is a fixture-specific Python-allocation
 measurement, not process RSS, total-system memory or a speed guarantee. Small
 or highly compressed wheels may benefit less and temporary I/O can cost more.
+
+### Complete text delivery from the source checkout
+
+The current source checks the return value of every report write: short writes,
+non-integer return values and failed flushes return exit 2, not a successful
+clear/collision verdict. Help and usage messages use the same checked text path.
+The installed command and module wrapper check both standard streams before
+shutdown, so a failed help/usage flush cannot become exit 120. Embedded
+`main(argv)` leaves caller streams open and unchanged. Successful help and
+argument parsing keep their ordinary `SystemExit(0)` / `SystemExit(2)` behavior.
+Already-written partial bytes cannot be retracted. This change is source-only;
+it does not publish a new PyPI release or change the collision model or report
+fields.
