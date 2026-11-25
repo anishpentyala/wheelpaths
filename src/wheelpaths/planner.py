@@ -101,7 +101,9 @@ def _wheel_snapshot(path, budget):
                 chunk = source.read(min(1024 * 1024, max_bytes - size + 1))
                 if not chunk:
                     break
-                snapshot.write(chunk)
+                written = snapshot.write(chunk)
+                if type(written) is not int or written != len(chunk):
+                    raise InvalidPlan('temporary snapshot did not accept complete archive bytes')
                 digest.update(chunk)
                 size += len(chunk)
             if size > 256 * 1024 * 1024:
