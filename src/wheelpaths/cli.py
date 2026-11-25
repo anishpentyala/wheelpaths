@@ -1,12 +1,29 @@
 """Machine-readable exit codes: 0 no modeled collision, 1 collisions, 2 invalid."""
 import argparse
 import json
-import os
 import sys
 from functools import partial
 from .planner import audit, InvalidPlan, Limits, _read_regular
 
 MAX_SCHEME_BYTES = 1024 * 1024
+
+
+def _write_text(stream, text):
+    if stream is None:
+        raise OSError('output stream is unavailable')
+    written = stream.write(text)
+    if type(written) is not int or written != len(text):
+        raise OSError('output stream did not accept complete text')
+    stream.flush()
+
+
+_DEFAULT_DESTINATION = object()
+
+
+class _ArgumentParser(argparse.ArgumentParser):
+    def _print_message(self, message, file=_DEFAULT_DESTINATION):
+        if message:
+            _write_text(sys.stderr if file is _DEFAULT_DESTINATION else file, message)
 
 
 def no_duplicates(pairs):
@@ -19,7 +36,7 @@ def no_duplicates(pairs):
 
 
 def _execute(argv=None):
-    parser = argparse.ArgumentParser(
+    parser = _ArgumentParser(
         description=__doc__,
         **({"color": False} if sys.version_info >= (3, 14) else {}),
         **({"formatter_class": partial(argparse.HelpFormatter, color=False)}
@@ -29,7 +46,10 @@ def _execute(argv=None):
     parser.add_argument('wheels', nargs='+')
     for name, value in vars(Limits()).items():
         parser.add_argument('--' + name.replace('_', '-'), type=int, default=value)
-    args = parser.parse_args(argv)
+    try:
+        args = parser.parse_args(argv)
+    except (OSError, ValueError, AttributeError):
+        return 2, True
     try:
         raw_scheme = _read_regular(args.scheme, MAX_SCHEME_BYTES)
         if len(raw_scheme) > MAX_SCHEME_BYTES:
@@ -46,8 +66,7 @@ def _execute(argv=None):
     else:
         code = 1 if result['conflicts'] else 0
     try:
-        sys.stdout.write(json.dumps(result, sort_keys=(code != 2)) + '\n')
-        sys.stdout.flush()
+        _write_text(sys.stdout, json.dumps(result, sort_keys=(code != 2)) + '\n')
     except (OSError, ValueError, AttributeError):
         return 2, True
     return code, False
@@ -59,21 +78,22 @@ def main(argv=None):
 
 
 def entrypoint():
-    """Process runner: stop a failed stdout from failing again at shutdown."""
-    code, output_failed = _execute()
-    if output_failed:
-        # A failed buffered flush is retried during interpreter shutdown,
-        # which otherwise replaces the intended exit 2 with exit 120.
+    """Process runner: stop failed output from failing again at shutdown."""
+    try:
+        code, _ = _execute()
+    except SystemExit as error:
+        code = error.code
+    for name in ('stdout', 'stderr'):
+        stream = getattr(sys, name)
+        if stream is None:
+            continue
         try:
-            stdout_fd = sys.stdout.fileno()
-            null_fd = os.open(os.devnull, os.O_WRONLY)
-            try:
-                os.dup2(null_fd, stdout_fd)
-            finally:
-                if null_fd != stdout_fd:
-                    os.close(null_fd)
+            stream.flush()
         except (OSError, ValueError, AttributeError):
-            sys.stdout = open(os.devnull, 'w')
+            # Only process wrappers own shutdown. Embedded main leaves streams
+            # untouched even after failed delivery.
+            setattr(sys, name, None)
+            code = 2
     return code
 
 
